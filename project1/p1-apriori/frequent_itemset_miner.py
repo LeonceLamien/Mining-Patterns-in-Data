@@ -62,9 +62,6 @@ class Node:
     def __str__(self):
         return str(self.item) + " (" + str(self.count) + ")"
 
-def char_to_index(c):
-    return ord(c) - ord('1')
-
 def insert_impl(node, numbers, d, parent,fre):
     if d == len(numbers):  
         node.isKey = True
@@ -82,26 +79,9 @@ def insert(item,frequency):
     global root
     insert_impl(root, item, 0, None,frequency)
 
-
-def get_support(root, item):
-    node = root
-    for c in item:
-        if c not in node.next:
-            return 0 
-        node = node.next[c]
-    return node.count
-
 def generate_candidate(frequent_itemsets):
     result = list(all_combinations(frequent_itemsets.keys()))
     return result
-
-# def prune_candidate(root, candidates, min_frequency):
-#     frequent_itemsets = []
-#     for item in candidates:
-#         support_candidate = get_support(root, item)
-#         if support_candidate >= min_frequency:
-#             frequent_itemsets.append(item)
-#     return frequent_itemsets
 
 def print_trie(node, prefix=[]):
     if node.isKey:
@@ -118,18 +98,6 @@ def is_subset(candidat, itemset):
 def all_combinations(iterable,k=0):
     items = list(iterable)
     return chain.from_iterable(combinations(items, r) for r in range(len(items) + 1))
-def combinaisons_de_2_gen(iterable):
-    for comb in combinations(iterable, 2):
-        yield comb  
-
-def combinaisons_de_2_gen(iterable, freq):
-    items = list(iterable)
-    for r in range(len(items) + 1):
-        for comb in combinations(iterable, r):
-            print(f"Combinaison : {comb[0]} et {comb[1]}") 
-            if comb[0] in freq  and comb[1] in freq:
-                yield comb
-
 
 def apriori(filepath, minFrequency):
     """Runs the apriori algorithm on the specified file with the given minimum frequency"""
