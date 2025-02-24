@@ -1,3 +1,6 @@
+import sys
+import re
+
 """
 Skeleton file for the project 1 of the LINGI2364 course.
 Use this as your submission file. Every piece of code that is used in your program should be put inside this file.
@@ -94,9 +97,6 @@ def compare_solution_files(expected_file, actual_file):
 def apriori(filepath, minFrequency):
 	"""Runs the apriori algorithm on the specified file with the given minimum frequency"""
 	# TODO: implementation of the apriori algorithm
-	dataset = Dataset(filepath)
-
-	print(dataset.items)
 	print("Not implemented")
 
 
@@ -104,5 +104,3 @@ def alternative_miner(filepath, minFrequency):
 	"""Runs the alternative frequent itemset mining algorithm on the specified file with the given minimum frequency"""
 	# TODO: either second implementation of the apriori algorithm or implementation of the depth first search algorithm
 	print("Not implemented")
-
-test = apriori("/Users/leoncelamien/Documents/master/Q2/mining_pattern/project1/p1-apriori/Datasets/mushroom/mushroom.dat", 0.8)
