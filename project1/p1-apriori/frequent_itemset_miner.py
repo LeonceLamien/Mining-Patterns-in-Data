@@ -1,4 +1,11 @@
+from itertools import chain, combinations
 from collections import defaultdict
+import time
+import cProfile
+import pstats
+import numpy as np
+import time
+import csv
 
 """
 Skeleton file for the project 1 of the LINGI2364 course.
@@ -206,6 +213,15 @@ def vertical_representation(dataset):
             vertical_db[item].add(tid)
     return vertical_db
 
+# def projection(full_vertical_db, item):
+
+#     item_tids = full_vertical_db[item]
+#     return {
+#         k: frozenset(v & item_tids)
+#         for k, v in full_vertical_db.items()
+#         if k != item and len(v & item_tids) > 0
+#     }
+
 def projection(full_vertical_db, item, min_support):
     item_tids = full_vertical_db[item]
     return {
@@ -217,7 +233,6 @@ def projection(full_vertical_db, item, min_support):
 
 
 def alternative_miner(filepath, minFrequency):
-    """Runs the alternative frequent itemset mining algorithm on the specified file with the given minimum frequency"""
     dataset = Dataset(filepath)
     trans_num = dataset.trans_num()
     root = Node(0,None,0)
@@ -225,6 +240,7 @@ def alternative_miner(filepath, minFrequency):
     min_support = minFrequency * trans_num
     full_vertical_db = vertical_representation(dataset)
     cache = {}
+    # vertical_db_size = len(full_vertical_db)
     sorted_items = sorted(full_vertical_db.items(), key=lambda x: -len(x[1]))
     for key, tids in sorted_items:
         new_itemset = [key]
@@ -236,3 +252,72 @@ def alternative_miner(filepath, minFrequency):
 
     print_trie(root)
     return root
+
+
+def test_temps_execution(test_list, verbose=True):
+    
+    results = []
+    
+    for test in test_list:
+        filepath, threshold = test
+        if verbose:
+            print(f"Test: {filepath} avec threshold = {threshold}")
+
+        start_time = time.perf_counter()
+        result_apriori = apriori(filepath, threshold)
+        time_apriori = time.perf_counter() - start_time
+        if verbose:
+            print(f"Temps d'exécution pour apriori : {time_apriori:.6f} secondes")
+        
+        start_time = time.perf_counter()
+        result_alternative = alternative_miner(filepath, threshold)
+        time_alternative = time.perf_counter() - start_time
+        if verbose:
+            print(f"Temps d'exécution pour alternative_miner : {time_alternative:.6f} secondes\n")
+        
+        results.append([filepath, threshold, time_apriori, time_alternative])
+    
+    # Écriture des résultats dans un fichier CSV
+    with open('execution_times.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["Test", "Threshold", "Apriori Time (s)", "Alternative Miner Time (s)"])
+        writer.writerows(results)
+    
+    if verbose:
+        print("Les résultats ont été enregistrés dans execution_times.csv")
+    
+    return results
+
+
+# Liste des tests: [chemin_dataset, threshold]
+test_list = [
+    ["Datasets/accidents/accidents.dat", 0.8],
+    ["Datasets/accidents/accidents.dat", 0.85],
+    ["Datasets/accidents/accidents.dat", 0.9],
+    
+    ["Datasets/chess/chess.dat", 0.7],
+    ["Datasets/chess/chess.dat", 0.8],
+    ["Datasets/chess/chess.dat", 0.9],
+    
+    ["Datasets/connect/connect.dat", 0.95],
+    ["Datasets/connect/connect.dat", 0.97],
+    ["Datasets/connect/connect.dat", 0.98],
+
+    ["Datasets/mushroom/mushroom.dat", 0.3],
+    ["Datasets/mushroom/mushroom.dat", 0.5],
+    ["Datasets/mushroom/mushroom.dat", 0.8],
+
+    ["Datasets/pumsb/pumsb.dat", 0.9],
+    ["Datasets/pumsb/pumsb.dat", 0.95],
+    ["Datasets/pumsb/pumsb.dat", 0.97],
+
+    ["Datasets/retail/retail.dat", 0.02],
+    ["Datasets/retail/retail.dat", 0.05],
+    ["Datasets/retail/retail.dat", 0.1],
+
+    ["Datasets/toy/toy.dat", 0.125],
+    ["Datasets/toy/toy.dat", 0.25],
+    ["Datasets/toy/toy.dat", 0.4],
+]
+
+test_temps_execution(test_list, verbose=False)
