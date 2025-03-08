@@ -6,6 +6,7 @@ import pstats
 import numpy as np
 import time
 import csv
+import tracemalloc
 
 """
 Skeleton file for the project 1 of the LINGI2364 course.
@@ -189,7 +190,7 @@ def apriori(filepath, minFrequency):
 
         k += 1
 
-    print_trie(root)
+    #print_trie(root)
     return root
 def clean_projection(full_vertical_db, min_support):
     return {k: v for k, v in full_vertical_db.items() if len(v) >= min_support}
@@ -250,42 +251,62 @@ def alternative_miner(filepath, minFrequency):
             new_vdb = projection(full_vertical_db, key, min_support)
             dfs(root,new_itemset, new_vdb, min_support, cache, trans_num)
 
-    print_trie(root)
+    #print_trie(root)
     return root
 
 
 def test_temps_execution(test_list, verbose=True):
-    
     results = []
-    
+
     for test in test_list:
         filepath, threshold = test
         if verbose:
             print(f"Test: {filepath} avec threshold = {threshold}")
 
-        start_time = time.perf_counter()
-        result_apriori = apriori(filepath, threshold)
-        time_apriori = time.perf_counter() - start_time
+        apriori_times = []
+        apriori_memories = []
+        alternative_times = []
+        alternative_memories = []
+
+        for _ in range(10):
+            tracemalloc.start() #TODO
+            start_time = time.perf_counter()
+            apriori(filepath, threshold)
+            apriori_times.append(time.perf_counter() - start_time)
+            current, peak = tracemalloc.get_traced_memory()
+            apriori_memories.append(peak)
+            tracemalloc.stop() #STOPPPPP
+
+            tracemalloc.start() #STARTTTTT
+            start_time = time.perf_counter()
+            alternative_miner(filepath, threshold)
+            alternative_times.append(time.perf_counter() - start_time)
+            current, peak = tracemalloc.get_traced_memory()
+            alternative_memories.append(peak)
+            tracemalloc.stop() #STOPPPP
+
+        avg_apriori_time = np.mean(apriori_times)
+        avg_apriori_memory = np.mean(apriori_memories) / 1024  # Convert to KB
+        avg_alternative_time = np.mean(alternative_times)
+        avg_alternative_memory = np.mean(alternative_memories) / 1024  # Convert to KB
+
         if verbose:
-            print(f"Temps d'exécution pour apriori : {time_apriori:.6f} secondes")
-        
-        start_time = time.perf_counter()
-        result_alternative = alternative_miner(filepath, threshold)
-        time_alternative = time.perf_counter() - start_time
-        if verbose:
-            print(f"Temps d'exécution pour alternative_miner : {time_alternative:.6f} secondes\n")
-        
-        results.append([filepath, threshold, time_apriori, time_alternative])
-    
+            print(f"Temps moyen d'exécution pour apriori : {avg_apriori_time:.6f} secondes")
+            print(f"Utilisation moyenne de la mémoire pour apriori : {avg_apriori_memory:.2f} KB")
+            print(f"Temps moyen d'exécution pour alternative_miner : {avg_alternative_time:.6f} secondes")
+            print(f"Utilisation moyenne de la mémoire pour alternative_miner : {avg_alternative_memory:.2f} KB\n")
+
+        results.append([filepath, threshold, avg_apriori_time, avg_apriori_memory, avg_alternative_time, avg_alternative_memory])
+
     # Écriture des résultats dans un fichier CSV
-    with open('execution_times.csv', 'w', newline='') as csvfile:
+    with open('execution_times_2.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(["Test", "Threshold", "Apriori Time (s)", "Alternative Miner Time (s)"])
+        writer.writerow(["Test", "Threshold", "Apriori Time (s)", "Apriori Memory (KB)", "Alternative Miner Time (s)", "Alternative Miner Memory (KB)"])
         writer.writerows(results)
-    
+
     if verbose:
         print("Les résultats ont été enregistrés dans execution_times.csv")
-    
+
     return results
 
 
@@ -320,4 +341,10 @@ test_list = [
     ["Datasets/toy/toy.dat", 0.4],
 ]
 
-test_temps_execution(test_list, verbose=False)
+test_list_2 = [
+    ["Datasets/chess/chess.dat", 0.7],
+    ["Datasets/chess/chess.dat", 0.8],
+    ["Datasets/chess/chess.dat", 0.9],
+]
+
+test_temps_execution(test_list_2, verbose=True)
