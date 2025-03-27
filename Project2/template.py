@@ -19,7 +19,7 @@ class Spade:
         negative_spade = spade_repr_from_transaction(self.neg_transactions)
     
         # Get all unique items
-        all_unique_items = set(positive_spade['repr'].keys()).union(negative_spade['repr'].keys())
+        all_unique_items = sorted(list(set(positive_spade['repr'].keys()).union(negative_spade['repr'].keys())))
     
         # Initialize the list of top-k patterns
         top_k_patterns = []
@@ -41,7 +41,6 @@ class Spade:
         self.depth_first_search(positive_spade, negative_spade, all_unique_items, top_k_patterns)
         
         # Sort by total support in descending order
-        # result = sorted(top_k_patterns, key=lambda x: -x[0])
         result = sorted(top_k_patterns, key=lambda x: (-x[0], x[1]))
         
         # Print the top-k patterns
@@ -67,7 +66,7 @@ class Spade:
         # Perform depth-first search
         while stack:
             pattern, pos_occurrences, neg_occurrences = stack.pop()  
-        
+            
             # Try extending the pattern with each item
             for item in items:
                 new_pattern = pattern + [item]
@@ -79,15 +78,6 @@ class Spade:
                 pos_support = len(set(tid for tid, _ in new_pos_occurrences))
                 neg_support = len(set(tid for tid, _ in new_neg_occurrences))
                 total_support = pos_support + neg_support                       
-                
-                if len(top_k_patterns) == self.k:
-                    # Check if the new pattern's total support matches the minimum support in the heap
-                    min_support = top_k_patterns[0][0]
-                    if total_support > min_support:
-                        self.k += 1
-                    elif total_support == min_support:
-                        # Allow patterns with the same support to be included without incrementing k
-                        heapq.heappush(top_k_patterns, (total_support, new_pattern, pos_support, neg_support))
                 
                 # Update top-k patterns
                 if len(top_k_patterns) < self.k:
@@ -101,10 +91,9 @@ class Spade:
             
                 # If new pattern has enough support, add it to the stack for further extension
                 if total_support >= min_support and (new_pos_occurrences or new_neg_occurrences):
-                    stack.append((new_pattern, new_pos_occurrences, new_neg_occurrences))
-
-
-    
+                    stack.append((new_pattern, new_pos_occurrences, new_neg_occurrences))       
+                
+                
     def get_support(self, pattern, spade_repr):
         """
         Calculate support of a pattern in a dataset
