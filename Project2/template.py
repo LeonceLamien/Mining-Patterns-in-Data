@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import sys
-import heapq
 
 class Spade:
 
@@ -14,6 +13,7 @@ class Spade:
         """
         Mine the top-k sequential patterns using the SPADE algorithm
         """
+
         # Convert transactions to SPADE vertical representation
         positive_spade = spade_repr_from_transaction(self.pos_transactions)
         negative_spade = spade_repr_from_transaction(self.neg_transactions)
@@ -21,77 +21,88 @@ class Spade:
         # Get all unique items
         all_unique_items = sorted(list(set(positive_spade['repr'].keys()).union(negative_spade['repr'].keys())))
     
-        # Initialize the list of top-k patterns
-        top_k_patterns = []
-    
-        # Handle single-item patterns
+        # Find all patterns without pruning first
+        all_patterns = []
+        
+        # Process single-item patterns
         for item in all_unique_items:
             positive_support = len(positive_spade['covers'][item])
             negative_support = len(negative_spade['covers'][item])
             total_support = positive_support + negative_support
-        
+            
             pattern = [item]
+            all_patterns.append((total_support, pattern, positive_support, negative_support))
         
-            if len(top_k_patterns) < self.k:
-                heapq.heappush(top_k_patterns, (total_support, pattern, positive_support, negative_support))
-            elif total_support > top_k_patterns[0][0]:
-                heapq.heapreplace(top_k_patterns, (total_support, pattern, positive_support, negative_support))
-                
-        # Perform depth-first search to find longer patterns
-        self.depth_first_search(positive_spade, negative_spade, all_unique_items, top_k_patterns)
+        # Find longer patterns using DFS
+        self.depth_first_search(positive_spade, negative_spade, all_unique_items, all_patterns)
         
-        # Sort by total support in descending order
-        result = sorted(top_k_patterns, key=lambda x: (-x[0], x[1]))
+        # Sort patterns by total support then by pattern lexicographically
+        all_patterns.sort(key=lambda x: (-x[0], x[1]))
         
-        # Print the top-k patterns
+        # Select top-k patterns
+        if len(all_patterns) <= self.k:
+            result = all_patterns
+        else:
+            # Get the k-th pattern's support
+            k_th_support = all_patterns[self.k-1][0]
+            
+            # Find how many patterns have the same support as the k-th pattern
+            same_support_count = sum(1 for p in all_patterns if p[0] == k_th_support)
+
+            # Find the index of the first pattern with this support
+            first_index = next(i for i, p in enumerate(all_patterns) if p[0] == k_th_support)
+            
+            # Include all patterns with support greater than k-th support, plus all patterns with exactly the k-th support
+            result = all_patterns[:first_index + same_support_count]
+        
+        # Print the result
         for total_support, pattern, pos_support, neg_support in result:
             pattern_str = '[' + ', '.join(pattern) + ']'
             print(f"{pattern_str} {pos_support} {neg_support} {total_support}")
-    
+            
         return result
-    
-    
-    def depth_first_search(self, positive_spade, negative_spade, items, top_k_patterns):
+
+    def depth_first_search(self, positive_spade, negative_spade, items, all_patterns):
         """
-        Recursive depth-first search to find frequent sequences
+        Depth-first search to find all sequential patterns
         """
-        # Create a stack for depth first search
+        # Stack for DFS
         stack = []
-    
-        # Initialize with single-item patterns
-        for item in items:
-            stack.append(([item], positive_spade['repr'][item] if item in positive_spade['repr'] else [], 
-                          negative_spade['repr'][item] if item in negative_spade['repr'] else []))
-    
-        # Perform depth-first search
+        
+        # Initialize the stack with single items
+        for item in sorted(items):
+            stack.append(([item], 
+                         positive_spade['repr'].get(item, []), 
+                         negative_spade['repr'].get(item, [])))
+        
+        pattern_count = 0
+        # Run DFS
         while stack:
-            pattern, pos_occurrences, neg_occurrences = stack.pop()  
+            pattern, pos_occurrences, neg_occurrences = stack.pop()
             
-            # Try extending the pattern with each item
-            for item in items:
+            # Try extending the pattern with each possible item
+            for item in sorted(items, reverse=True):
                 new_pattern = pattern + [item]
-            
-                # Calculate new occurrences and supports
-                new_pos_occurrences = self.get_new_occurrences(pos_occurrences, positive_spade['repr'][item] if item in positive_spade['repr'] else [])
-                new_neg_occurrences = self.get_new_occurrences(neg_occurrences, negative_spade['repr'][item] if item in negative_spade['repr'] else [])
-            
+                
+                # Get new occurrences
+                new_pos_occurrences = self.get_new_occurrences(pos_occurrences, positive_spade['repr'].get(item, []))
+                new_neg_occurrences = self.get_new_occurrences(neg_occurrences, negative_spade['repr'].get(item, []))
+                
+                # Only consider patterns with at least one occurrence
+                if not new_pos_occurrences and not new_neg_occurrences:
+                    continue
+                
+                # Calculate supports
                 pos_support = len(set(tid for tid, _ in new_pos_occurrences))
                 neg_support = len(set(tid for tid, _ in new_neg_occurrences))
-                total_support = pos_support + neg_support                       
+                total_support = pos_support + neg_support
                 
-                # Update top-k patterns
-                if len(top_k_patterns) < self.k:
-                    heapq.heappush(top_k_patterns, (total_support, new_pattern, pos_support, neg_support))
-                    min_support = top_k_patterns[0][0] if top_k_patterns else 0
-                elif total_support > top_k_patterns[0][0]:
-                    heapq.heapreplace(top_k_patterns, (total_support, new_pattern, pos_support, neg_support))
-                    min_support = top_k_patterns[0][0]
-                else:
-                    min_support = top_k_patterns[0][0]
-            
-                # If new pattern has enough support, add it to the stack for further extension
-                if total_support >= min_support and (new_pos_occurrences or new_neg_occurrences):
-                    stack.append((new_pattern, new_pos_occurrences, new_neg_occurrences))       
+                # Add the pattern to our results
+                all_patterns.append((total_support, new_pattern, pos_support, neg_support))
+                pattern_count += 1
+                
+                # Push to stack for further extension
+                stack.append((new_pattern, new_pos_occurrences, new_neg_occurrences))
                 
                 
     def get_support(self, pattern, spade_repr):
@@ -111,7 +122,9 @@ class Spade:
             occurrences = self.get_new_occurrences(occurrences, spade_repr.get(pattern[i], []))
         
         return len(set(tid for tid, _ in occurrences))
-
+    
+    
+    
     def get_new_occurrences(self, prefix_occurrences, item_occurrences):
         """
         Finds occurrences of the extended pattern by comparing positions
@@ -138,34 +151,6 @@ class Spade:
                         break
         
         return new_occurrences
-
-    
-    
-    def get_feature_matrices(self):
-        return {
-            'train_matrix': [],
-            'test_matrix': [],
-            'train_labels': [],
-            'test_labels': [],
-        }
-
-    def cross_validation(self, nfolds):
-        pos_fold_size = len(self.pos_transactions) // nfolds
-        neg_fold_size = len(self.neg_transactions) // nfolds
-        for fold in range(nfolds):
-            print('fold {}'.format(fold + 1))
-            pos_train_set = {i for i in range(len(self.pos_transactions)) if i < fold*pos_fold_size or i >= (fold+1)*pos_fold_size}
-            neg_train_set = {i for i in range(len(self.neg_transactions)) if i < fold*neg_fold_size or i >= (fold+1)*neg_fold_size}
-
-            self.mine_top_k()
-            
-            m = self.get_feature_matrices()
-            classifier = tree.DecisionTreeClassifier(random_state=1)
-            classifier.fit(m['train_matrix'], m['train_labels'])
-
-            predicted = classifier.predict(m['test_matrix'])
-            accuracy = metrics.accuracy_score(m['test_labels'], predicted)
-            print(f'Accuracy: {accuracy}')
 
 def get_transactions(filepath):
     transactions = []
