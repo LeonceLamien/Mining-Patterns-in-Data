@@ -13,47 +13,53 @@ class Spade:
         """
         Mine the top-k sequential patterns using the SPADE algorithm
         """
-
+        
         # Convert transactions to SPADE vertical representation
         positive_spade = spade_repr_from_transaction(self.pos_transactions)
         negative_spade = spade_repr_from_transaction(self.neg_transactions)
     
         # Get all unique items
         all_unique_items = sorted(list(set(positive_spade['repr'].keys()).union(negative_spade['repr'].keys())))
-    
-        # Find all patterns without pruning first
+        
+        # Find all patterns with dynamic pruning
         all_patterns = []
         
         # Process single-item patterns
         for item in all_unique_items:
-            positive_support = len(positive_spade['covers'][item])
-            negative_support = len(negative_spade['covers'][item])
+            positive_support = len(positive_spade['covers'].get(item, set()))
+            negative_support = len(negative_spade['covers'].get(item, set()))
             total_support = positive_support + negative_support
             
             pattern = [item]
             all_patterns.append((total_support, pattern, positive_support, negative_support))
         
+        # Sort patterns to get initial min_support
+        all_patterns.sort(key=lambda x: (-x[0], x[1]))
+        
         # Find longer patterns using DFS
         self.depth_first_search(positive_spade, negative_spade, all_unique_items, all_patterns)
         
-        # Sort patterns by total support then by pattern lexicographically
+        # Final sort of all patterns
         all_patterns.sort(key=lambda x: (-x[0], x[1]))
         
-        # Select top-k patterns
-        if len(all_patterns) <= self.k:
-            result = all_patterns
-        else:
-            # Get the k-th pattern's support
-            k_th_support = all_patterns[self.k-1][0]
-            
-            # Find how many patterns have the same support as the k-th pattern
-            same_support_count = sum(1 for p in all_patterns if p[0] == k_th_support)
-
-            # Find the index of the first pattern with this support
-            first_index = next(i for i, p in enumerate(all_patterns) if p[0] == k_th_support)
-            
-            # Include all patterns with support greater than k-th support, plus all patterns with exactly the k-th support
-            result = all_patterns[:first_index + same_support_count]
+        # Get top-k support values
+        support_values = []
+        for sup, _, _, _ in all_patterns:
+            if sup not in support_values:
+                support_values.append(sup)
+                if len(support_values) == self.k:
+                    break
+        
+        # If we have fewer than k distinct supports, use the lowest one
+        min_support = support_values[-1] if support_values else 0
+        
+        result = []
+        # Select patterns with top-k supports
+        for total_support, pattern, pos_support, neg_support in all_patterns:
+            if total_support >= min_support:
+                result.append((total_support, pattern, pos_support, neg_support))
+            else:
+                break
         
         # Print the result
         for total_support, pattern, pos_support, neg_support in result:
@@ -64,46 +70,86 @@ class Spade:
 
     def depth_first_search(self, positive_spade, negative_spade, items, all_patterns):
         """
-        Depth-first search to find all sequential patterns
+        Depth-first search to find all sequential patterns with dynamic pruning
+        using early minimum support calculation
         """
+        # Calculate initial minimum support threshold based on existing patterns
+        min_support = 0
+        if len(all_patterns) >= self.k:
+            # Sort patterns by support (descending)
+            all_patterns.sort(key=lambda x: (-x[0], x[1]))
+            
+            # Get distinct support values
+            support_values = []
+            for sup, _, _, _ in all_patterns:
+                if sup not in support_values:
+                    support_values.append(sup)
+                    if len(support_values) == self.k:
+                        break
+            
+            # Use kth support value as minimum threshold
+            if len(support_values) == self.k:
+                min_support = support_values[-1]
+        
         # Stack for DFS
         stack = []
         
         # Initialize the stack with single items
         for item in sorted(items):
-            stack.append(([item], 
-                         positive_spade['repr'].get(item, []), 
-                         negative_spade['repr'].get(item, [])))
+            pos_support = len(positive_spade['covers'].get(item, set()))
+            neg_support = len(negative_spade['covers'].get(item, set()))
+            total_support = pos_support + neg_support
+            
+            # Only add to stack if support meets minimum threshold
+            if total_support >= min_support:
+                stack.append(([item], 
+                        positive_spade['repr'].get(item, []), 
+                        negative_spade['repr'].get(item, [])))
         
-        pattern_count = 0
-        # Run DFS
+        # Track patterns we've added during this DFS
+        dfs_patterns_added = 0
+        
+        # Process patterns in the stack
         while stack:
             pattern, pos_occurrences, neg_occurrences = stack.pop()
             
-            # Try extending the pattern with each possible item
-            for item in sorted(items, reverse=True):
+            # Periodically update min_support (every 100 new patterns)
+            if dfs_patterns_added > 0 and dfs_patterns_added % 100 == 0:
+                # Recalculate min_support based on latest patterns
+                support_values = []
+                all_patterns.sort(key=lambda x: (-x[0], x[1]))
+                for sup, _, _, _ in all_patterns:
+                    if sup not in support_values:
+                        support_values.append(sup)
+                        if len(support_values) == self.k:
+                            break
+                
+                if len(support_values) == self.k:
+                    min_support = support_values[-1]
+            
+            # Try extending the pattern with each item
+            for item in sorted(items):
+                # Create a new pattern by appending the item
                 new_pattern = pattern + [item]
                 
-                # Get new occurrences
+                # Get occurrences of the extended pattern
                 new_pos_occurrences = self.get_new_occurrences(pos_occurrences, positive_spade['repr'].get(item, []))
                 new_neg_occurrences = self.get_new_occurrences(neg_occurrences, negative_spade['repr'].get(item, []))
                 
-                # Only consider patterns with at least one occurrence
-                if not new_pos_occurrences and not new_neg_occurrences:
-                    continue
-                
-                # Calculate supports
+                # Calculate the support
                 pos_support = len(set(tid for tid, _ in new_pos_occurrences))
                 neg_support = len(set(tid for tid, _ in new_neg_occurrences))
                 total_support = pos_support + neg_support
                 
-                # Add the pattern to our results
-                all_patterns.append((total_support, new_pattern, pos_support, neg_support))
-                pattern_count += 1
-                
-                # Push to stack for further extension
-                stack.append((new_pattern, new_pos_occurrences, new_neg_occurrences))
-                
+                # Add the pattern to our results if it meets support threshold
+                if total_support >= min_support:
+                    all_patterns.append((total_support, new_pattern, pos_support, neg_support))
+                    dfs_patterns_added += 1
+                    
+                    # Add to stack for further extension if there are occurrences
+                    if new_pos_occurrences or new_neg_occurrences:
+                        stack.append((new_pattern, new_pos_occurrences, new_neg_occurrences))
+
                 
     def get_support(self, pattern, spade_repr):
         """
@@ -122,8 +168,6 @@ class Spade:
             occurrences = self.get_new_occurrences(occurrences, spade_repr.get(pattern[i], []))
         
         return len(set(tid for tid, _ in occurrences))
-    
-    
     
     def get_new_occurrences(self, prefix_occurrences, item_occurrences):
         """
