@@ -44,7 +44,7 @@ def is_subsequence(pattern, transaction):
     
     return False
 
-def train_and_evaluate(pos_filepath, neg_filepath, k, min_freq, num_folds):
+def train_and_evaluate(pos_filepath, neg_filepath, k, min_freq, num_folds, verbose):
     """
     Train a decision tree classifier using top-k patterns according to WRAcc and evaluate with cross-validation
     """
@@ -67,7 +67,8 @@ def train_and_evaluate(pos_filepath, neg_filepath, k, min_freq, num_folds):
     all_true_labels = []
     
     for train_index, test_index in kf.split(all_transactions):
-        print(f"fold {fold_num}")
+        if verbose:
+            print(f"fold {fold_num}")
         
         # Split data into train and test sets
         train_transactions = [all_transactions[i] for i in train_index]
@@ -99,12 +100,14 @@ def train_and_evaluate(pos_filepath, neg_filepath, k, min_freq, num_folds):
             
             if frequency >= min_freq:
                 filtered_patterns.append(pattern)
-                # Print pattern details as required
-                pattern_str = '[' + ', '.join(pattern) + ']'
-                print(f"{pattern_str} {pos_support} {neg_support} {wracc_score}")
+                # Print pattern details if verbose is enabled
+                if verbose:
+                    pattern_str = '[' + ', '.join(pattern) + ']'
+                    print(f"{pattern_str} {pos_support} {neg_support} {wracc_score}")
         
         if not filtered_patterns:
-            print("No patterns meet the minimum frequency threshold")
+            if verbose:
+                print("No patterns meet the minimum frequency threshold")
             fold_num += 1
             continue
         
@@ -119,12 +122,14 @@ def train_and_evaluate(pos_filepath, neg_filepath, k, min_freq, num_folds):
         # Make predictions on test set
         y_pred = classifier.predict(X_test)
         
-        # Display predictions
-        print(' '.join(map(str, y_pred.tolist())))
+        # Display predictions if verbose is enabled
+        if verbose:
+            print(' '.join(map(str, y_pred.tolist())))
         
         # Calculate accuracy
         accuracy = np.mean(y_pred == y_test)
-        print(f"accuracy: {accuracy:.5f}")
+        if verbose:
+            print(f"accuracy: {accuracy:.5f}")
         total_accuracy += accuracy
         
         # Store predictions and true labels for contingency table
@@ -132,19 +137,25 @@ def train_and_evaluate(pos_filepath, neg_filepath, k, min_freq, num_folds):
         all_true_labels.extend(y_test)
         
         fold_num += 1
-        print()  # Blank line between folds
+        if verbose:
+            print()  # Blank line between folds
     
     # Calculate and display mean accuracy
     mean_accuracy = total_accuracy / num_folds
-    print(f"Mean Accuracy: {mean_accuracy:.5f}")
+    if verbose:
+        print(f"Mean Accuracy: {mean_accuracy:.5f}")
     
     # Display contingency table
     conf_matrix = contingency_table(all_true_labels, all_predictions)
-    print("\nContingency Table:")
-    print(f"True Positive: {conf_matrix['TP']}")
-    print(f"False Positive: {conf_matrix['FP']}")
-    print(f"True Negative: {conf_matrix['TN']}")
-    print(f"False Negative: {conf_matrix['FN']}")
+    if verbose:
+        print("\nContingency Table:")
+        print(f"True Positive: {conf_matrix['TP']}")
+        print(f"False Positive: {conf_matrix['FP']}")
+        print(f"True Negative: {conf_matrix['TN']}")
+        print(f"False Negative: {conf_matrix['FN']}")
+    
+    print(f"Mean Accuracy: {mean_accuracy:.5f}")
+    return mean_accuracy
 
 def contingency_table(y_true, y_pred):
     """
@@ -171,7 +182,7 @@ def main():
     min_freq = float(sys.argv[4])
     num_folds = int(sys.argv[5])
     
-    train_and_evaluate(pos_filepath, neg_filepath, k, min_freq, num_folds)
+    train_and_evaluate(pos_filepath, neg_filepath, k, min_freq, num_folds, True)
 
 if __name__ == '__main__':
     main()

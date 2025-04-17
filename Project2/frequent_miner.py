@@ -62,9 +62,9 @@ class Spade:
                 break
         
         # Print the result
-        for total_support, pattern, pos_support, neg_support in result:
-            pattern_str = '[' + ', '.join(pattern) + ']'
-            print(f"{pattern_str} {pos_support} {neg_support} {total_support}")
+        #for total_support, pattern, pos_support, neg_support in result:
+        #    pattern_str = '[' + ', '.join(pattern) + ']'
+        #    print(f"{pattern_str} {pos_support} {neg_support} {total_support}")
             
         return result
 

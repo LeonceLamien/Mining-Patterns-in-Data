@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import time
 
 class Spade:
 
@@ -310,8 +311,14 @@ def spade_repr_from_transaction(transactions):
 
 
 def main():
-    s = Spade(pos_filepath, neg_filepath, k)
-    result = s.min_top_k_wracc()
+    execute_time = []
+    for _ in range (5):
+        start_time = time.time()
+        s = Spade(pos_filepath, neg_filepath, k)
+        result = s.min_top_k_wracc()
+        end_time = time.time()
+        execute_time.append(end_time - start_time)
+    print("Mean execution time: ", sum(execute_time) / len(execute_time))
     return result
 
 if __name__ == '__main__':
