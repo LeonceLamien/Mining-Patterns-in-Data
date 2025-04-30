@@ -1,5 +1,8 @@
 import re
+import math
 import pandas as pd
+import itertools
+from collections import defaultdict
 
 # A class for representing the CPT of a variable
 class CPT:
@@ -134,67 +137,42 @@ class BayesianNetwork:
         x = tuple([ pa[parent.name] for parent in self.variables[Y].cpt.parents ])
         return self.P_Yisy_given_parents_x(Y,y,x)
     
-    def infer_single_missing(self, assignment_with_missing, missing_var):
+    def infer_single_missing(self, assignment, missing_var):
         """
-        assignment_with_missing: dict {var_name: value or None}
-        - All observed variables are mapped to their (string) value.
-        - Only one variable (named missing_var) is missing (set to None).
-
-        missing_var: the name of the variable to impute.
-
-        Returns:
-        dist: dict {value: probability} for P(missing_var=value | evidence)
+        Version avec gestion numérique stable (log-probabilités)
         """
-        # Debug: print input assignment for confirmation
-        # print("Input assignment:", assignment_with_missing)
-        # print("Missing variable:", missing_var)
-        
         var = self.variables[missing_var]
-        result = {}
+        log_probs = defaultdict(float)
 
-        # Will store {v: p} before normalization
-        raw_probs = {}
-
-        # For each possible value of the missing variable
         for v in var.values:
-            # Copy evidence assignment and fill in the missing var
-            full_assignment = assignment_with_missing.copy()
+            full_assignment = assignment.copy()
             full_assignment[missing_var] = v
-
-            # Debug: print full assignment for this trial
-            # print(f"Trying {missing_var} = {v} -> full assignment:", full_assignment)
-
-            # Calculate the joint probability of the assignment
-            jp = 1.0
-            for vn, vobj in self.variables.items():
-                # Build parent assignment for this variable
-                parents = vobj.cpt.parents
-                pa_tuple = tuple(full_assignment[parent.name] for parent in parents)
-                val = full_assignment[vn]
-
-                # Sanity check
-                if val not in vobj.values:
-                    print(f"Warning: {val} not a valid value for {vn}")
+            
+            log_p = 0.0
+            for v_name, v_obj in self.variables.items():
+                parents = v_obj.cpt.parents
+                parent_vals = tuple(full_assignment[p.name] for p in parents)
+                val = full_assignment[v_name]
                 
-                prob = vobj.cpt.entries[pa_tuple][val]
-                jp *= prob
+                try:
+                    p = v_obj.cpt.entries[parent_vals][val]
+                    log_p += math.log(p) if p > 0 else -float('inf')
+                except KeyError:
+                    log_p = -float('inf')
+                    break
+            
+            log_probs[v] = log_p
 
-                # Debug: Print each factor
-                # print(f"P({vn}={val} | parents={pa_tuple}) = {prob}")
-
-            # print(f"Joint probability for {missing_var}={v}: {jp}")
-            raw_probs[v] = jp
-
-        # Normalize
-        total = sum(raw_probs.values())
+        # Conversion en probabilités normalisées
+        max_log = max(log_probs.values()) if log_probs else 0
+        probs = {k: math.exp(v - max_log) for k, v in log_probs.items()}
+        total = sum(probs.values())
+        
         if total == 0:
-            print("WARNING: Sum of probabilities is zero! (Check assignments & data)")
-            return {v: 0.0 for v in var.values}
-        result = {v: p / total for v, p in raw_probs.items()}
+            return {v: 1/len(var.values) for v in var.values}
+        
+        return {k: v/total for k, v in probs.items()}
 
-        # Debug: print normalized distribution
-        # print("Resulting distribution for", missing_var, ":", result)
-        return result
     
     def full_joint_prob(self, assignment):
         """
@@ -212,43 +190,94 @@ class BayesianNetwork:
         return prob
 
     
-    def infer_two_missing(self, assignment_with_missing, missing_vars):
+    def infer_two_missing(self, assignment, missing_vars):
         """
-        assignment_with_missing: dict of {var_name: value or None}
-        missing_vars: list of two variable names that are missing
-
-        Returns: 
-        joint_dist, a dict of (x_val, y_val) -> probability
+        Version optimisée avec gestion numérique stable
         """
         var1, var2 = missing_vars
-        values1 = self.variables[var1].values 
+        values1 = self.variables[var1].values
         values2 = self.variables[var2].values
-
-        joint_probs = {}
+        
+        log_joint = defaultdict(float)
 
         for v1 in values1:
             for v2 in values2:
-                # Fill in missing with tested values
-                assignment = assignment_with_missing.copy()
-                assignment[var1] = v1
-                assignment[var2] = v2
-
-                # Compute joint probability of full assignment
-                p = self.full_joint_prob(assignment)  # or whatever your method is
-                joint_probs[(v1, v2)] = p
+                full_assignment = assignment.copy()
+                full_assignment[var1] = v1
+                full_assignment[var2] = v2
                 
-                # Debug: print each trial
-                # print(f"Trying {var1}={v1}, {var2}={v2} -> prob={p}")
+                log_p = 0.0
+                for v_name, v_obj in self.variables.items():
+                    parents = v_obj.cpt.parents
+                    parent_vals = tuple(full_assignment[p.name] for p in parents)
+                    val = full_assignment[v_name]
+                    
+                    try:
+                        p = v_obj.cpt.entries[parent_vals][val]
+                        log_p += math.log(p) if p > 0 else -float('inf')
+                    except KeyError:
+                        log_p = -float('inf')
+                        break
+                
+                log_joint[(v1, v2)] = log_p
 
-        # Normalize
-        total = sum(joint_probs.values())
-        if total > 0:
-            for k in joint_probs:
-                joint_probs[k] /= total
+        # Normalisation
+        max_log = max(log_joint.values()) if log_joint else 0
+        probs = {k: math.exp(v - max_log) for k, v in log_joint.items()}
+        total = sum(probs.values())
+        
+        if total == 0:
+            uniform = 1 / (len(values1) * len(values2))
+            return {(v1, v2): uniform for v1 in values1 for v2 in values2}
+        
+        return {k: v/total for k, v in probs.items()}
 
-        # Debug: print normalized joint distribution
-        # print(f"Resulting joint for {var1},{var2} :", joint_probs)
-        return joint_probs
+    
+    def learn_parameters(self, filename, alpha=1):
+        data = pd.read_csv(filename)
+        
+        for col in data.columns:
+            if col in self.variables:
+                data[col] = data[col].apply(lambda x: to_bn_value(x) if pd.notnull(x) else x)
+
+        for var_name, var in self.variables.items():
+            parents = var.cpt.parents
+            parent_names = [p.name for p in parents]
+            
+            global_counts = data[var_name].value_counts().to_dict()
+            global_total = sum(global_counts.values()) + alpha * len(var.values)
+            
+            parent_combinations = list(itertools.product(*[p.values for p in parents])) if parents else [()]
+            
+            for parent_comb in parent_combinations:
+                filtered_data = data.copy()
+                valid_filter = True
+                
+                for idx, parent_val in enumerate(parent_comb):
+                    parent_col = parent_names[idx]
+                    mask = filtered_data[parent_col] == parent_val
+                    if mask.sum() == 0:
+                        valid_filter = False
+                        break
+                    filtered_data = filtered_data[mask]
+                
+                if not valid_filter or len(filtered_data) == 0:
+                    probs = {
+                        val: (global_counts.get(val, 0) + alpha / global_total )
+                        for val in var.values
+                    }
+                else:
+                    value_counts = filtered_data[var_name].value_counts().to_dict()
+                    total_observed = sum(value_counts.values())
+                    total_count = total_observed + alpha * len(var.values)
+                    
+                    probs = {
+                        val: (value_counts.get(val, 0) + alpha) / total_count
+                        for val in var.values
+                    }
+                
+                var.cpt.entries[parent_comb] = probs
+
 
     
 def is_missing(val):
@@ -332,8 +361,12 @@ def test_inference_accuracy(bn, test_missing_csv, test_full_csv):
 
     return n_correct / n_total if n_total else 0.0
 
+bn = BayesianNetwork("project3/datasets/alarm/alarm_complete.bif")
+bn.learn_parameters("project3/datasets/alarm/train.csv")
+test_inference_accuracy(bn, "project3/datasets/alarm/test_missing.csv", "project3/datasets/alarm/test.csv")
+
+
+
 #bn = BayesianNetwork("datasets/alarm/alarm_complete.bif")
 #test_inference_accuracy(bn, "datasets/alarm/test_missing.csv", "datasets/alarm/test.csv")
 
-bn = BayesianNetwork("datasets/andes/andes_complete.bif")
-test_inference_accuracy(bn, "datasets/andes/test_missing.csv", "datasets/andes/test.csv")
