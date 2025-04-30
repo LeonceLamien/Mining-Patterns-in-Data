@@ -1,6 +1,7 @@
 import re
 import math
 import pandas as pd
+import numpy as np
 import itertools
 from collections import defaultdict
 
@@ -139,7 +140,14 @@ class BayesianNetwork:
     
     def infer_single_missing(self, assignment, missing_var):
         """
-        Version avec gestion numérique stable (log-probabilités)
+        assignment_with_missing: dict {var_name: value or None}
+        - All observed variables are mapped to their (string) value.
+        - Only one variable (named missing_var) is missing (set to None).
+
+        missing_var: the name of the variable to impute.
+
+        Returns:
+        dist: dict {value: probability} for P(missing_var=value | evidence)
         """
         var = self.variables[missing_var]
         log_probs = defaultdict(float)
@@ -192,7 +200,11 @@ class BayesianNetwork:
     
     def infer_two_missing(self, assignment, missing_vars):
         """
-        Version optimisée avec gestion numérique stable
+        assignment_with_missing: dict of {var_name: value or None}
+        missing_vars: list of two variable names that are missing
+
+        Returns: 
+        joint_dist, a dict of (x_val, y_val) -> probability
         """
         var1, var2 = missing_vars
         values1 = self.variables[var1].values
@@ -233,50 +245,58 @@ class BayesianNetwork:
         return {k: v/total for k, v in probs.items()}
 
     
-    def learn_parameters(self, filename, alpha=1):
+    def learn_parameters(self, filename, alpha=2, shrinkage_k=5):
         data = pd.read_csv(filename)
         
         for col in data.columns:
             if col in self.variables:
+                var = self.variables[col]
                 data[col] = data[col].apply(lambda x: to_bn_value(x) if pd.notnull(x) else x)
-
+                data[col] = data[col].apply(lambda x: x if x in var.values else np.nan)
+        
         for var_name, var in self.variables.items():
             parents = var.cpt.parents
             parent_names = [p.name for p in parents]
+            required_columns = [var_name] + parent_names
+            data_var = data.dropna(subset=required_columns).copy()
             
-            global_counts = data[var_name].value_counts().to_dict()
+            global_counts = data_var[var_name].value_counts().to_dict()
             global_total = sum(global_counts.values()) + alpha * len(var.values)
+            global_probs = {
+                val: (global_counts.get(val, 0) + alpha) / global_total
+                for val in var.values
+            }
+            
             
             parent_combinations = list(itertools.product(*[p.values for p in parents])) if parents else [()]
             
             for parent_comb in parent_combinations:
-                filtered_data = data.copy()
-                valid_filter = True
-                
-                for idx, parent_val in enumerate(parent_comb):
-                    parent_col = parent_names[idx]
-                    mask = filtered_data[parent_col] == parent_val
-                    if mask.sum() == 0:
-                        valid_filter = False
-                        break
-                    filtered_data = filtered_data[mask]
-                
-                if not valid_filter or len(filtered_data) == 0:
-                    probs = {
-                        val: (global_counts.get(val, 0) + alpha / global_total )
-                        for val in var.values
-                    }
+                if parents:
+                    mask = pd.Series(True, index=data_var.index)
+                    for idx, parent_val in enumerate(parent_comb):
+                        mask &= (data_var[parent_names[idx]] == parent_val)
+                    subset = data_var[mask]
                 else:
-                    value_counts = filtered_data[var_name].value_counts().to_dict()
-                    total_observed = sum(value_counts.values())
-                    total_count = total_observed + alpha * len(var.values)
-                    
-                    probs = {
-                        val: (value_counts.get(val, 0) + alpha) / total_count
-                        for val in var.values
-                    }
+                    subset = data_var
                 
-                var.cpt.entries[parent_comb] = probs
+                n_observed = len(subset)
+                if n_observed == 0:
+                    var.cpt.entries[parent_comb] = global_probs
+                    continue
+                
+                value_counts = subset[var_name].value_counts().to_dict()
+                total_local = n_observed + alpha * len(var.values)
+                local_probs = {
+                    val: (value_counts.get(val, 0) + alpha) / total_local
+                    for val in var.values
+                }
+                
+                weight = n_observed / (n_observed + shrinkage_k)  
+                shrinked_probs = {
+                    val: weight * local_probs[val] + (1 - weight) * global_probs[val]
+                    for val in var.values
+                }
+                var.cpt.entries[parent_comb] = shrinked_probs
 
 
     
@@ -284,12 +304,10 @@ def is_missing(val):
     return pd.isnull(val) or val == '' or str(val).lower() in {'nan', 'none'}
 
 def to_bn_value(val):
-    # Adjust as needed to match BN's expected format!
-    # Here, ensuring string type and handling float->int if needed
-    try:
-        return str(int(float(val)))
-    except (ValueError, TypeError):
-        return str(val) if val is not None else None
+    if isinstance(val, float) and val.is_integer():
+        return str(int(val))
+    val_clean = str(val).strip().lower()  # Normalisation
+    return val_clean
 
 def test_inference_accuracy(bn, test_missing_csv, test_full_csv):
     """
@@ -364,7 +382,6 @@ def test_inference_accuracy(bn, test_missing_csv, test_full_csv):
 bn = BayesianNetwork("project3/datasets/alarm/alarm_complete.bif")
 bn.learn_parameters("project3/datasets/alarm/train.csv")
 test_inference_accuracy(bn, "project3/datasets/alarm/test_missing.csv", "project3/datasets/alarm/test.csv")
-
 
 
 #bn = BayesianNetwork("datasets/alarm/alarm_complete.bif")
