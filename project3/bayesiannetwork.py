@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import itertools
 from collections import defaultdict
+import copy
 
 # A class for representing the CPT of a variable
 class CPT:
@@ -115,12 +116,18 @@ class BayesianNetwork:
                 variable.cpt = cpt
             i += 1
 
+        # Ensure every variable has a CPT (for variables without CPT in BIF)
+        for var in self.variables.values():
+            if var.cpt is None:
+                var.cpt = CPT(var, [])
+                var.cpt.entries[tuple()] = {v: 1.0 / len(var.values) for v in var.values}
+
     # Method for writing a Bayesian Network to an output file
     def write(self,filename):
         with open(filename,"w") as file:
             for var in self.variables.values ():
                 file.write(str(var))
-            for var in self.variables.values ():
+            for var in self.variables.values (): 
                 file.write(str(var.cpt))
 
     # Example method: returns the probability P(Y=y|X=x),
@@ -245,8 +252,7 @@ class BayesianNetwork:
         return {k: v/total for k, v in probs.items()}
 
     
-    def learn_parameters(self, filename, alpha=2, shrinkage_k=5):
-        data = pd.read_csv(filename)
+    def learn_parameters(self, data, alpha=2, shrinkage_k=10):
         
         for col in data.columns:
             if col in self.variables:
@@ -298,6 +304,23 @@ class BayesianNetwork:
                 }
                 var.cpt.entries[parent_comb] = shrinked_probs
 
+    def remove_all_edges(self):
+        """Set all variables to have no parents (fully disconnected)."""
+        for var in self.variables.values():
+            var.cpt.parents = []
+            var.cpt.entries = {}
+            
+    def add_single_edge(self, child_name, parent_name):
+        """Make `child_name` dependent on `parent_name` (MUST BE currently isolated)."""
+        child_var = self.variables[child_name]
+        parent_var = self.variables[parent_name]
+        if parent_var in child_var.cpt.parents:
+            return False # Already present
+        if len(child_var.cpt.parents) == 0:
+            child_var.cpt.parents = [parent_var]
+            child_var.cpt.entries = {} # Reset CPT
+            return True
+        return False # Already has a parent (enforce "linear"-only, not multi-parent)
 
     
 def is_missing(val):
@@ -379,11 +402,132 @@ def test_inference_accuracy(bn, test_missing_csv, test_full_csv):
 
     return n_correct / n_total if n_total else 0.0
 
-bn = BayesianNetwork("project3/datasets/alarm/alarm_complete.bif")
-bn.learn_parameters("project3/datasets/alarm/train.csv")
-test_inference_accuracy(bn, "project3/datasets/alarm/test_missing.csv", "project3/datasets/alarm/test.csv")
+def compute_loglikelihood(bn, data):
+    """Return the loglikelihood (sum over all rows)."""
+    loglik = 0.0
+    for idx, row in data.iterrows():
+        assignment = {v: to_bn_value(row[v]) for v in bn.variables}
+        try:
+            p = bn.full_joint_prob(assignment)
+            loglik += np.log(p) if p > 0 else -1e9  # Large penalty for impossible
+        except Exception as e:
+            print(f"Loglikelihood: Exception at row {idx}: {e}")
+            loglik += -1e9
+    return loglik
 
+def is_isolated(bn, varname):
+    """Check if the variable has no parents and is not a parent for any other."""
+    v = bn.variables[varname]
+    if v.cpt.parents:
+        return False
+    for u in bn.variables.values():
+        if v in u.cpt.parents:
+            return False
+    return True
+
+def possible_local_moves(bn):
+    """Return all valid (child, parent) edge additions under constraints."""
+    moves = []
+    for child in bn.variables:
+        if is_isolated(bn, child):
+            for parent in bn.variables:
+                if parent != child:
+                    moves.append((child, parent))  # add parent→child (i.e., child has up to 1 parent)
+    return moves
+
+def copy_bn_structure(bn, remove_all_edges=False):
+    """Return a new BN with same variables, (optionally) without parent edges."""
+    new_bn = BayesianNetwork.__new__(BayesianNetwork)
+    new_bn.variables = {}
+    # Deep copy Variable objects and empty CPTs
+    for name, var in bn.variables.items():
+        new_var = Variable(var.name, var.values.copy())
+        # Copy CPT object (but will rewrite parents below)
+        new_var.cpt = CPT(new_var, [])
+        new_bn.variables[name] = new_var
+
+    # Now assign parent pointers
+    for name, var in bn.variables.items():
+        if not remove_all_edges:
+            orig_parents = var.cpt.parents
+        else:
+            orig_parents = []
+        new_parents = [new_bn.variables[p.name] for p in orig_parents]
+        new_bn.variables[name].cpt.parents = new_parents
+
+    return new_bn
+
+def structure_learning(train_csv, original_bn):
+    """
+    Returns: a new BayesianNetwork object with an improved structure.
+    - Starts with the 'empty' structure (all independent).
+    - Greedily adds edges as described.
+    - Always fills CPTs using your learn_parameters function.
+    """
+    # 1. Initialize "empty" structure: every variable with NO parents
+    
+    data = pd.read_csv(train_csv)
+    bn = copy_bn_structure(original_bn, remove_all_edges=True)
+    print("Initialized empty structure (no edges)")
+
+    best_ll = None
+    improved = True
+    step = 0
+
+    while improved:
+        improved = False
+        moves = possible_local_moves(bn)
+        print(f"\nStep {step}: considering {len(moves)} possible moves")
+        step += 1
+
+        best_move = None
+        best_score = None
+        best_bn = None
+
+        for child, parent in moves:
+            bn_candidate = copy_bn_structure(bn)
+            # Add parent as the only parent of child (since only allowed if child is isolated)
+            bn_candidate.variables[child].cpt.parents = [bn_candidate.variables[parent]]
+
+            # After structure, always fill parameters from train!
+            bn_candidate.learn_parameters(data)
+            ll = compute_loglikelihood(bn_candidate, data)
+            print(f"Trying move: {child} ← {parent}, loglikelihood = {ll:.4f}")
+
+            if (best_score is None) or (ll > best_score):
+                best_score = ll
+                best_move = (child, parent)
+                best_bn = bn_candidate
+
+        if best_score is not None and (best_ll is None or best_score > best_ll):
+            print(f"Accept move: {best_move} (ΔLL = {best_score - (best_ll if best_ll is not None else 0):.4f})")
+            bn = best_bn
+            best_ll = best_score
+            improved = True
+        else:
+            print("No improving move; stopping structure search.")
+    
+    print("Structure learning finished!")
+    return bn
+
+
+base_bn = BayesianNetwork("datasets/alarm/alarm_missing_probabilities.bif")
+#base_bn.learn_parameters("datasets/alarm/train.csv")
+learned_bn = structure_learning("datasets/alarm/train.csv", base_bn)
+learned_bn.write("datasets/alarm/learned_alarm.bif")
+test_inference_accuracy(base_bn, "datasets/alarm/test_missing.csv", "datasets/alarm/test.csv")
+
+#base_bn = BayesianNetwork("datasets/andes/andes_missing_probabilities.bif")
+#learned_bn = structure_learning("datasets/andes/train.csv", base_bn)
+#learned_bn.write("learned_andes.bif")
+#test_inference_accuracy(learned_bn, "datasets/andes/test_missing.csv", "datasets/andes/test.csv")
+
+#bn = BayesianNetwork("datasets/andes/andes_complete.bif")
+#test_inference_accuracy(bn, "datasets/andes/test_missing.csv", "datasets/andes/test.csv")
+
+#bn = BayesianNetwork("datasets/andes/andes_missing_probabilities.bif")
+#bn.learn_parameters("datasets/andes/train.csv")
+#test_inference_accuracy(bn, "datasets/andes/test_missing.csv", "datasets/andes/test.csv")
 
 #bn = BayesianNetwork("datasets/alarm/alarm_complete.bif")
 #test_inference_accuracy(bn, "datasets/alarm/test_missing.csv", "datasets/alarm/test.csv")
-
