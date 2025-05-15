@@ -1,0 +1,48 @@
+variable asia {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable bronc {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable dysp {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable either {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable lung {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable smoke {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable tub {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable xray {
+  type discrete [ 2 ] { 0, 1 };
+}
+probability ( asia ) {
+  table 0.5, 0.5;
+}
+probability ( bronc ) {
+  table 0.5, 0.5;
+}
+probability ( dysp ) {
+  table 0.5, 0.5;
+}
+probability ( either ) {
+  table 0.5, 0.5;
+}
+probability ( lung ) {
+  table 0.5, 0.5;
+}
+probability ( smoke ) {
+  table 0.5, 0.5;
+}
+probability ( tub ) {
+  table 0.5, 0.5;
+}
+probability ( xray ) {
+  table 0.5, 0.5;
+}

@@ -1,0 +1,1338 @@
+variable APPLY32 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable APPLY61 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable APPLY77 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable AXIS33 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable BUGGY54 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable CHOOSE19 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable CHOOSE35 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable CHOOSE47 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable CHOOSE62 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable COMPO16 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable CONSTANT5 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable DEFINE23 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable DISPLACEM0 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable EQUAL71 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable EQUATION28 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable FIND49 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable FIND58 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable FORCE60 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GIVEN21 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GIVEN_1 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL65 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL66 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL68 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL72 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_103 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_104 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_107 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_108 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_109 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_110 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_111 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_113 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_114 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_121 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_126 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_127 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_129 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_130 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_142 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_143 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_146 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_147 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_149 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_150 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_153 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_2 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_48 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_49 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_50 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_53 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_56 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_57 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_61 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_62 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_63 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_66 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_69 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_72 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_79 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_80 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_81 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_83 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_84 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_87 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_98 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GOAL_99 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GRAV2 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable GRAV78 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable HORIZ53 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable IDENTIFY10 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable IDENTIFY22 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable IDENTIFY39 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable IDENTIFY41 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable IDENTIFY43 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable IDENTIFY55 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable IDENTIFY59 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable IDENTIFY9 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable INCLINE51 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable KINE29 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable KINEMATI17 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable KNOWN6 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable KNOWN8 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable MAXIMIZE34 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable NEED1 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable NEED36 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable NEED67 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable NEWTONS45 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable NEWTONS74 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable NORMAL50 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable NORMAL52 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable NULL48 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RApp1 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RApp10 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RApp11 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RApp12 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RApp13 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RApp2 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RApp3 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RApp4 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RApp5 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RApp6 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RApp7 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RApp8 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RApp9 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RESOLVE37 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RESOLVE38 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RESOLVE40 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable RESOLVE42 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SLIDING4 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_10 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_100 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_102 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_106 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_11 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_112 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_115 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_116 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_117 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_118 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_119 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_12 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_120 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_122 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_123 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_124 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_125 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_128 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_13 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_131 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_132 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_133 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_134 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_135 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_136 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_137 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_14 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_15 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_151 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_152 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_154 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_155 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_156 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_16 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_17 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_18 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_19 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_20 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_21 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_24 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_25 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_26 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_27 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_28 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_29 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_3 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_31 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_33 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_34 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_37 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_38 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_4 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_40 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_41 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_42 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_43 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_44 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_46 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_47 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_5 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_51 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_52 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_54 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_55 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_59 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_6 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_60 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_64 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_65 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_67 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_68 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_7 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_70 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_71 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_73 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_74 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_75 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_8 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_86 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_88 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_9 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_91 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_92 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_93 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_94 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_95 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SNode_97 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable STRAT_90 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SUM75 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SYSTEM18 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable SYSTEM46 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable TRY11 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable TRY12 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable TRY13 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable TRY14 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable TRY15 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable TRY24 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable TRY25 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable TRY26 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable TRY76 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable VALUE3 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable VAR20 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable VECTOR27 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable VECTOR44 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable VECTOR69 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable VECTOR70 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable VECTOR73 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable VELOCITY7 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable WEIGHT56 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable WEIGHT57 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable WRITE30 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable WRITE31 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable WRITE63 {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable WRITE64 {
+  type discrete [ 2 ] { 0, 1 };
+}
+probability ( APPLY32 ) {
+  table 0.5, 0.5;
+}
+probability ( APPLY61 ) {
+  table 0.5, 0.5;
+}
+probability ( APPLY77 ) {
+  table 0.5, 0.5;
+}
+probability ( AXIS33 ) {
+  table 0.5, 0.5;
+}
+probability ( BUGGY54 ) {
+  table 0.5, 0.5;
+}
+probability ( CHOOSE19 ) {
+  table 0.5, 0.5;
+}
+probability ( CHOOSE35 ) {
+  table 0.5, 0.5;
+}
+probability ( CHOOSE47 ) {
+  table 0.5, 0.5;
+}
+probability ( CHOOSE62 ) {
+  table 0.5, 0.5;
+}
+probability ( COMPO16 ) {
+  table 0.5, 0.5;
+}
+probability ( CONSTANT5 ) {
+  table 0.5, 0.5;
+}
+probability ( DEFINE23 ) {
+  table 0.5, 0.5;
+}
+probability ( DISPLACEM0 ) {
+  table 0.5, 0.5;
+}
+probability ( EQUAL71 ) {
+  table 0.5, 0.5;
+}
+probability ( EQUATION28 ) {
+  table 0.5, 0.5;
+}
+probability ( FIND49 ) {
+  table 0.5, 0.5;
+}
+probability ( FIND58 ) {
+  table 0.5, 0.5;
+}
+probability ( FORCE60 ) {
+  table 0.5, 0.5;
+}
+probability ( GIVEN21 ) {
+  table 0.5, 0.5;
+}
+probability ( GIVEN_1 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL65 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL66 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL68 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL72 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_103 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_104 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_107 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_108 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_109 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_110 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_111 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_113 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_114 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_121 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_126 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_127 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_129 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_130 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_142 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_143 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_146 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_147 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_149 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_150 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_153 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_2 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_48 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_49 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_50 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_53 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_56 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_57 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_61 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_62 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_63 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_66 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_69 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_72 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_79 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_80 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_81 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_83 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_84 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_87 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_98 ) {
+  table 0.5, 0.5;
+}
+probability ( GOAL_99 ) {
+  table 0.5, 0.5;
+}
+probability ( GRAV2 ) {
+  table 0.5, 0.5;
+}
+probability ( GRAV78 ) {
+  table 0.5, 0.5;
+}
+probability ( HORIZ53 ) {
+  table 0.5, 0.5;
+}
+probability ( IDENTIFY10 ) {
+  table 0.5, 0.5;
+}
+probability ( IDENTIFY22 ) {
+  table 0.5, 0.5;
+}
+probability ( IDENTIFY39 ) {
+  table 0.5, 0.5;
+}
+probability ( IDENTIFY41 ) {
+  table 0.5, 0.5;
+}
+probability ( IDENTIFY43 ) {
+  table 0.5, 0.5;
+}
+probability ( IDENTIFY55 ) {
+  table 0.5, 0.5;
+}
+probability ( IDENTIFY59 ) {
+  table 0.5, 0.5;
+}
+probability ( IDENTIFY9 ) {
+  table 0.5, 0.5;
+}
+probability ( INCLINE51 ) {
+  table 0.5, 0.5;
+}
+probability ( KINE29 ) {
+  table 0.5, 0.5;
+}
+probability ( KINEMATI17 ) {
+  table 0.5, 0.5;
+}
+probability ( KNOWN6 ) {
+  table 0.5, 0.5;
+}
+probability ( KNOWN8 ) {
+  table 0.5, 0.5;
+}
+probability ( MAXIMIZE34 ) {
+  table 0.5, 0.5;
+}
+probability ( NEED1 ) {
+  table 0.5, 0.5;
+}
+probability ( NEED36 ) {
+  table 0.5, 0.5;
+}
+probability ( NEED67 ) {
+  table 0.5, 0.5;
+}
+probability ( NEWTONS45 ) {
+  table 0.5, 0.5;
+}
+probability ( NEWTONS74 ) {
+  table 0.5, 0.5;
+}
+probability ( NORMAL50 ) {
+  table 0.5, 0.5;
+}
+probability ( NORMAL52 ) {
+  table 0.5, 0.5;
+}
+probability ( NULL48 ) {
+  table 0.5, 0.5;
+}
+probability ( RApp1 ) {
+  table 0.5, 0.5;
+}
+probability ( RApp10 ) {
+  table 0.5, 0.5;
+}
+probability ( RApp11 ) {
+  table 0.5, 0.5;
+}
+probability ( RApp12 ) {
+  table 0.5, 0.5;
+}
+probability ( RApp13 ) {
+  table 0.5, 0.5;
+}
+probability ( RApp2 ) {
+  table 0.5, 0.5;
+}
+probability ( RApp3 ) {
+  table 0.5, 0.5;
+}
+probability ( RApp4 ) {
+  table 0.5, 0.5;
+}
+probability ( RApp5 ) {
+  table 0.5, 0.5;
+}
+probability ( RApp6 ) {
+  table 0.5, 0.5;
+}
+probability ( RApp7 ) {
+  table 0.5, 0.5;
+}
+probability ( RApp8 ) {
+  table 0.5, 0.5;
+}
+probability ( RApp9 ) {
+  table 0.5, 0.5;
+}
+probability ( RESOLVE37 ) {
+  table 0.5, 0.5;
+}
+probability ( RESOLVE38 ) {
+  table 0.5, 0.5;
+}
+probability ( RESOLVE40 ) {
+  table 0.5, 0.5;
+}
+probability ( RESOLVE42 ) {
+  table 0.5, 0.5;
+}
+probability ( SLIDING4 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_10 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_100 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_102 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_106 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_11 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_112 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_115 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_116 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_117 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_118 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_119 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_12 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_120 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_122 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_123 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_124 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_125 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_128 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_13 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_131 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_132 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_133 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_134 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_135 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_136 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_137 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_14 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_15 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_151 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_152 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_154 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_155 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_156 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_16 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_17 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_18 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_19 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_20 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_21 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_24 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_25 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_26 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_27 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_28 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_29 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_3 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_31 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_33 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_34 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_37 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_38 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_4 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_40 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_41 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_42 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_43 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_44 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_46 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_47 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_5 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_51 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_52 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_54 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_55 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_59 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_6 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_60 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_64 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_65 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_67 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_68 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_7 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_70 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_71 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_73 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_74 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_75 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_8 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_86 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_88 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_9 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_91 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_92 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_93 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_94 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_95 ) {
+  table 0.5, 0.5;
+}
+probability ( SNode_97 ) {
+  table 0.5, 0.5;
+}
+probability ( STRAT_90 ) {
+  table 0.5, 0.5;
+}
+probability ( SUM75 ) {
+  table 0.5, 0.5;
+}
+probability ( SYSTEM18 ) {
+  table 0.5, 0.5;
+}
+probability ( SYSTEM46 ) {
+  table 0.5, 0.5;
+}
+probability ( TRY11 ) {
+  table 0.5, 0.5;
+}
+probability ( TRY12 ) {
+  table 0.5, 0.5;
+}
+probability ( TRY13 ) {
+  table 0.5, 0.5;
+}
+probability ( TRY14 ) {
+  table 0.5, 0.5;
+}
+probability ( TRY15 ) {
+  table 0.5, 0.5;
+}
+probability ( TRY24 ) {
+  table 0.5, 0.5;
+}
+probability ( TRY25 ) {
+  table 0.5, 0.5;
+}
+probability ( TRY26 ) {
+  table 0.5, 0.5;
+}
+probability ( TRY76 ) {
+  table 0.5, 0.5;
+}
+probability ( VALUE3 ) {
+  table 0.5, 0.5;
+}
+probability ( VAR20 ) {
+  table 0.5, 0.5;
+}
+probability ( VECTOR27 ) {
+  table 0.5, 0.5;
+}
+probability ( VECTOR44 ) {
+  table 0.5, 0.5;
+}
+probability ( VECTOR69 ) {
+  table 0.5, 0.5;
+}
+probability ( VECTOR70 ) {
+  table 0.5, 0.5;
+}
+probability ( VECTOR73 ) {
+  table 0.5, 0.5;
+}
+probability ( VELOCITY7 ) {
+  table 0.5, 0.5;
+}
+probability ( WEIGHT56 ) {
+  table 0.5, 0.5;
+}
+probability ( WEIGHT57 ) {
+  table 0.5, 0.5;
+}
+probability ( WRITE30 ) {
+  table 0.5, 0.5;
+}
+probability ( WRITE31 ) {
+  table 0.5, 0.5;
+}
+probability ( WRITE63 ) {
+  table 0.5, 0.5;
+}
+probability ( WRITE64 ) {
+  table 0.5, 0.5;
+}

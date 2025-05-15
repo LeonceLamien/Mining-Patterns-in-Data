@@ -1,0 +1,192 @@
+variable CBODD_12_00 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable CBODD_12_15 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable CBODD_12_30 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable CBODD_12_45 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable CBODN_12_00 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable CBODN_12_15 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable CBODN_12_30 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable CBODN_12_45 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable CKND_12_00 {
+  type discrete [ 3 ] { 0, 1, 2 };
+}
+variable CKND_12_15 {
+  type discrete [ 3 ] { 0, 1, 2 };
+}
+variable CKND_12_30 {
+  type discrete [ 3 ] { 0, 1, 2 };
+}
+variable CKND_12_45 {
+  type discrete [ 3 ] { 0, 1, 2 };
+}
+variable CKNI_12_00 {
+  type discrete [ 3 ] { 0, 1, 2 };
+}
+variable CKNI_12_15 {
+  type discrete [ 3 ] { 0, 1, 2 };
+}
+variable CKNI_12_30 {
+  type discrete [ 3 ] { 0, 1, 2 };
+}
+variable CKNI_12_45 {
+  type discrete [ 3 ] { 0, 1, 2 };
+}
+variable CKNN_12_00 {
+  type discrete [ 3 ] { 0, 1, 2 };
+}
+variable CKNN_12_15 {
+  type discrete [ 3 ] { 0, 1, 2 };
+}
+variable CKNN_12_30 {
+  type discrete [ 3 ] { 0, 1, 2 };
+}
+variable CKNN_12_45 {
+  type discrete [ 3 ] { 0, 1, 2 };
+}
+variable CNOD_12_00 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable CNOD_12_15 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable CNOD_12_30 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable CNOD_12_45 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable CNON_12_00 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable CNON_12_15 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable CNON_12_30 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable CNON_12_45 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable C_NI_12_00 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable C_NI_12_15 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable C_NI_12_30 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+variable C_NI_12_45 {
+  type discrete [ 4 ] { 0, 1, 2, 3 };
+}
+probability ( CBODD_12_00 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( CBODD_12_15 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( CBODD_12_30 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( CBODD_12_45 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( CBODN_12_00 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( CBODN_12_15 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( CBODN_12_30 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( CBODN_12_45 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( CKND_12_00 ) {
+  table 0.3333333333333333, 0.3333333333333333, 0.3333333333333333;
+}
+probability ( CKND_12_15 ) {
+  table 0.3333333333333333, 0.3333333333333333, 0.3333333333333333;
+}
+probability ( CKND_12_30 ) {
+  table 0.3333333333333333, 0.3333333333333333, 0.3333333333333333;
+}
+probability ( CKND_12_45 ) {
+  table 0.3333333333333333, 0.3333333333333333, 0.3333333333333333;
+}
+probability ( CKNI_12_00 ) {
+  table 0.3333333333333333, 0.3333333333333333, 0.3333333333333333;
+}
+probability ( CKNI_12_15 ) {
+  table 0.3333333333333333, 0.3333333333333333, 0.3333333333333333;
+}
+probability ( CKNI_12_30 ) {
+  table 0.3333333333333333, 0.3333333333333333, 0.3333333333333333;
+}
+probability ( CKNI_12_45 ) {
+  table 0.3333333333333333, 0.3333333333333333, 0.3333333333333333;
+}
+probability ( CKNN_12_00 ) {
+  table 0.3333333333333333, 0.3333333333333333, 0.3333333333333333;
+}
+probability ( CKNN_12_15 ) {
+  table 0.3333333333333333, 0.3333333333333333, 0.3333333333333333;
+}
+probability ( CKNN_12_30 ) {
+  table 0.3333333333333333, 0.3333333333333333, 0.3333333333333333;
+}
+probability ( CKNN_12_45 ) {
+  table 0.3333333333333333, 0.3333333333333333, 0.3333333333333333;
+}
+probability ( CNOD_12_00 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( CNOD_12_15 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( CNOD_12_30 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( CNOD_12_45 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( CNON_12_00 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( CNON_12_15 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( CNON_12_30 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( CNON_12_45 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( C_NI_12_00 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( C_NI_12_15 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( C_NI_12_30 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
+probability ( C_NI_12_45 ) {
+  table 0.25, 0.25, 0.25, 0.25;
+}
