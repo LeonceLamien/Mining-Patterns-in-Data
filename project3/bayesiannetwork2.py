@@ -22,16 +22,9 @@ class CPT:
 
     def __str__(self):
         comma = ", "
-        if len(self.parents) == 0:
-            return f"probability ( {self.head.name} ) {{" + "\n" \
-                f"  table {comma.join ( map(str,self.entries[tuple()].values () ))};" + "\n" \
-                f"}}" + "\n"
-        else:
-            return f"probability ( {self.head.name} | {comma.join ( [p.name for p in self.parents ] )} ) {{" + "\n" + \
-                "\n".join([
-                    f"  ({comma.join(names)}) {comma.join(map(str,values.values ()))};"
-                    for names, values in self.entries.items()
-                ]) + "\n}\n"
+        return f"variable {self.name} {{" + "\n" \
+             + f"  type discrete [ {len(self.values)} ] {{ {(comma.join(self.values))} }};" + "\n" \
+             + f"}}" + "\n"
 
 
 # A class for representing a variable
