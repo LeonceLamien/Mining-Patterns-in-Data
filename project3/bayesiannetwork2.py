@@ -4,6 +4,10 @@ import pandas as pd
 import numpy as np
 import itertools
 from collections import defaultdict
+import copy
+from collections import defaultdict
+import sys
+
 # A class for representing the CPT of a variable
 
 
@@ -22,9 +26,16 @@ class CPT:
 
     def __str__(self):
         comma = ", "
-        return f"variable {self.name} {{" + "\n" \
-             + f"  type discrete [ {len(self.values)} ] {{ {(comma.join(self.values))} }};" + "\n" \
-             + f"}}" + "\n"
+        if len(self.parents) == 0:
+            return f"probability ( {self.head.name} ) {{" + "\n" \
+                f"  table {comma.join ( map(str,self.entries[tuple()].values () ))};" + "\n" \
+                f"}}" + "\n"
+        else:
+            return f"probability ( {self.head.name} | {comma.join ( [p.name for p in self.parents ] )} ) {{" + "\n" + \
+                "\n".join ( [  \
+                  f"  ({comma.join(names)}) {comma.join(map(str,values.values ()))};" \
+                    for names,values in self.entries.items () \
+                ] ) + "\n}\n" 
 
 
 # A class for representing a variable
@@ -39,16 +50,9 @@ class Variable:
     # String representation of the variable according to the BIF format
     def __str__(self):
         comma = ", "
-        if len(self.parents) == 0:
-            return f"probability ( {self.head.name} ) {{" + "\n" \
-                f"  table {comma.join ( map(str,self.entries[tuple()].values () ))};" + "\n" \
-                f"}}" + "\n"
-        else:
-            return f"probability ( {self.head.name} | {comma.join ( [p.name for p in self.parents ] )} ) {{" + "\n" + \
-                "\n".join([
-                    f"  ({comma.join(names)}) {comma.join(map(str,values.values ()))};"
-                    for names, values in self.entries.items()
-                ]) + "\n}\n"
+        return f"variable {self.name} {{" + "\n" \
+             + f"  type discrete [ {len(self.values)} ] {{ {(comma.join(self.values))} }};" + "\n" \
+             + f"}}" + "\n"
 
 
 class BayesianNetwork:
@@ -132,28 +136,15 @@ class BayesianNetwork:
                     v: 1.0 / len(var.values) for v in var.values}
 
     # Method for writing a Bayesian Network to an output file
+    # In the BayesianNetwork class's write method:
     def write(self, filename):
         with open(filename, "w") as file:
+            # Write variable definitions (no parents here)
             for var in self.variables.values():
                 file.write(str(var))
+            # Write CPTs (parents are referenced here)
             for var in self.variables.values():
-                file.write(str(var.cpt))
-
-    # Example method: returns the probability P(Y=y|X=x),
-    # for one variable Y in the BN, y a value in its domain,
-    # and x an assignment to its parents in the network, specified
-    # in the correct order of parents.
-    def P_Yisy_given_parents_x(self, Y, y, x=tuple()):
-        return self.variables[Y].cpt.entries[x][y]
-
-    # Example method: returns the probability P(Y=y|X=x),
-    # for one variable Y in the BN, y a value in its domain,
-    # and pa a dictionnary of assignments to the parents,
-    # with for every parent variable its associated assignment.
-    def P_Yisy_given_parents(self, Y, y, pa={}):
-        x = tuple([pa[parent.name]
-                  for parent in self.variables[Y].cpt.parents])
-        return self.P_Yisy_given_parents_x(Y, y, x)
+                file.write(str(var.cpt))  # Correctly access CPT's parents
 
     def infer_single_missing(self, assignment, missing_var):
         """
@@ -261,7 +252,6 @@ class BayesianNetwork:
         return {k: v/total for k, v in probs.items()}
 
     def learn_parameters(self, data, alpha=2, shrinkage_k=10):
-        data = pd.read_csv(data).astype(str)
         for col in data.columns:
             if col in self.variables:
                 var = self.variables[col]
@@ -322,19 +312,6 @@ class BayesianNetwork:
             var.cpt.parents = []
             var.cpt.entries = {}
 
-    def add_single_edge(self, child_name, parent_name):
-        """Make `child_name` dependent on `parent_name` (MUST BE currently isolated)."""
-        child_var = self.variables[child_name]
-        parent_var = self.variables[parent_name]
-        if parent_var in child_var.cpt.parents:
-            return False  # Already present
-        if len(child_var.cpt.parents) == 0:
-            child_var.cpt.parents = [parent_var]
-            child_var.cpt.entries = {}  # Reset CPT
-            return True
-        # Already has a parent (enforce "linear"-only, not multi-parent)
-        return False
-
 
 def is_missing(val):
     return pd.isnull(val) or val == '' or str(val).lower() in {'nan', 'none'}
@@ -384,6 +361,7 @@ def test_inference_accuracy(bn, test_missing_csv, test_full_csv):
             pred_val = max(prob_dist, key=prob_dist.get)
             true_val = to_bn_value(df_full.loc[idx, missing_var])
 
+            # print(f"Row {idx}: Impute {missing_var}. Pred: {pred_val}, True: {true_val}, Prob Dist: {prob_dist}")
             n_total += 1
             n_single += 1
             if pred_val == true_val:
@@ -396,6 +374,7 @@ def test_inference_accuracy(bn, test_missing_csv, test_full_csv):
             true1 = to_bn_value(df_full.loc[idx, var1])
             true2 = to_bn_value(df_full.loc[idx, var2])
 
+            # print(f"Row {idx}: Impute {var1},{var2}. Pred: {v1},{v2}, True: {true1},{true2}, Joint Dist: {joint_dist}")
             n_total += 2
             n_two += 1
             if v1 == true1:
@@ -408,45 +387,9 @@ def test_inference_accuracy(bn, test_missing_csv, test_full_csv):
             continue
 
         else:
+            # print(f"Row {idx}: Skipping row with >2 missing values: {missing_vars}")
             continue
     return n_correct / n_total if n_total else 0.0
-
-
-def compute_loglikelihood(bn, data):
-    """Return the loglikelihood (sum over all rows)."""
-    loglik = 0.0
-    for idx, row in data.iterrows():
-        assignment = {v: to_bn_value(row[v]) for v in bn.variables}
-        try:
-            p = bn.full_joint_prob(assignment)
-            # Large penalty for impossible
-            loglik += np.log(p) if p > 0 else -1e9
-        except Exception as e:
-            loglik += -1e9
-    return loglik
-
-
-def is_isolated(bn, varname):
-    """Check if the variable has no parents and is not a parent for any other."""
-    v = bn.variables[varname]
-    if v.cpt.parents:
-        return False
-    for u in bn.variables.values():
-        if v in u.cpt.parents:
-            return False
-    return True
-
-
-def possible_local_moves(bn):
-    """Return all valid (child, parent) edge additions under constraints."""
-    moves = []
-    for child in bn.variables:
-        if is_isolated(bn, child):
-            for parent in bn.variables:
-                if parent != child:
-                    # add parent→child (i.e., child has up to 1 parent)
-                    moves.append((child, parent))
-    return moves
 
 
 def copy_bn_structure(bn, remove_all_edges=False):
@@ -472,194 +415,106 @@ def copy_bn_structure(bn, remove_all_edges=False):
     return new_bn
 
 
-def compute_mutual_info(x, y):
-    """Compute mutual information between two categorical variables"""
-    try:
-        # Create contingency table with smoothing
-        contingency = pd.crosstab(x, y, margins=False) + 1e-10
-        joint = contingency / contingency.sum().sum()
+def compute_mutual_information(data, var1, var2):
+    """Compute mutual information between two variables in the dataset."""
+    subset = data[[var1, var2]].dropna()
+    if len(subset) < 2:
+        return 0.0  # Not enough data
 
-        # Compute marginals
-        p_x = joint.sum(axis=1).values
-        p_y = joint.sum(axis=0).values
+    # Compute joint and marginal probabilities
+    p_xy = pd.crosstab(subset[var1], subset[var2], normalize=True)
+    p_x = subset[var1].value_counts(normalize=True)
+    p_y = subset[var2].value_counts(normalize=True)
 
-        # Calculate mutual information
-        mi = 0
-        for i in range(joint.shape[0]):
-            for j in range(joint.shape[1]):
-                mi += joint.iloc[i, j] * \
-                    np.log(joint.iloc[i, j] / (p_x[i] * p_y[j]))
-        return mi
-    except:
-        return 0
-
-
-def safe_logprob(bn, row):
-    """Safe log probability calculation with error handling"""
-    try:
-        logp = 0
-        for var in bn.variables.values():
-            parents = var.cpt.parents
-            parent_values = tuple(str(row[p.name]) for p in parents)
-            value = str(row[var.name])
-            prob = var.cpt.entries.get(parent_values, {}).get(value, 1e-10)
-            logp += np.log(prob)
-        return logp
-    except Exception as e:
-        return float('-inf')
+    mi = 0.0
+    for x_val in p_xy.index:
+        for y_val in p_xy.columns:
+            p_joint = p_xy.loc[x_val, y_val]
+            p_x_marginal = p_x.get(x_val, 1e-9)  # Avoid zero
+            p_y_marginal = p_y.get(y_val, 1e-9)
+            if p_joint > 0:
+                mi += p_joint * np.log(p_joint / (p_x_marginal * p_y_marginal))
+    return mi
 
 
-def structure_learning(train_csv, original_bn, max_steps=5, n_candidates=3):
-    """Structure learning with improved accuracy"""
-    try:
-        # Load data ensuring string type
-        data = pd.read_csv(train_csv).astype(str)
-        bn = copy_bn_structure(original_bn, remove_all_edges=True)
+def structure_learning(train_csv, original_bn):
+    """Learn a tree-structured BN using Chow-Liu algorithm."""
+    data = pd.read_csv(train_csv)
+    bn = copy_bn_structure(original_bn, remove_all_edges=True)
+    variables = list(bn.variables.keys())
 
-        # Initialize with independent variables
-        for var in bn.variables.values():
-            var.cpt = CPT(var, [])
-        bn.learn_parameters(data)
+    # Compute mutual information for all pairs
+    edges = []
+    for i in range(len(variables)):
+        var1 = variables[i]
+        for j in range(i+1, len(variables)):
+            var2 = variables[j]
+            mi = compute_mutual_information(data, var1, var2)
+            edges.append((-mi, var1, var2))  # Negative for min-heap sorting
 
-        # Compute initial log-likelihood
-        loglikes = [safe_logprob(bn, row) for _, row in data.iterrows()]
-        best_ll = sum(ll for ll in loglikes if not np.isinf(ll))
+    # Kruskal's algorithm for Maximum Spanning Tree
+    edges.sort()  # Sorts ascending based on -mi (equiv to descending MI)
+    parent = {var: var for var in variables}
+    mst_edges = []
 
-        for step in range(max_steps):
+    def find(u):
+        while parent[u] != u:
+            parent[u] = parent[parent[u]]  # Path compression
+            u = parent[u]
+        return u
 
-            # Get all possible moves
-            candidates = []
-            variables = list(bn.variables.keys())
+    for edge in edges:
+        mi = -edge[0]
+        u, v = edge[1], edge[2]
+        root_u = find(u)
+        root_v = find(v)
+        if root_u != root_v:
+            mst_edges.append((u, v))
+            parent[root_v] = root_u
+        if len(mst_edges) == len(variables) - 1:
+            break
 
-            for child in variables:
-                # Only consider nodes with no parents
-                if bn.variables[child].cpt.parents:
-                    continue
+    # Build adjacency list for MST
+    adj = defaultdict(list)
+    for u, v in mst_edges:
+        adj[u].append(v)
+        adj[v].append(u)
 
-                # Compute MI with all other variables
-                mi_scores = []
-                for parent in variables:
-                    if parent != child:
-                        mi = compute_mutual_info(data[child], data[parent])
-                        mi_scores.append((mi, parent))
+    # Assign directions from root (choose first variable)
+    root = variables[0]
+    parent_map = {}
+    visited = set([root])
+    queue = [root]
+    while queue:
+        node = queue.pop(0)
+        for neighbor in adj[node]:
+            if neighbor not in visited:
+                parent_map[neighbor] = node
+                visited.add(neighbor)
+                queue.append(neighbor)
 
-                # Take top n_candidates
-                mi_scores.sort(reverse=True)
-                for mi, parent in mi_scores[:n_candidates]:
-                    candidates.append((child, parent, mi))
+    # Update BN structure
+    for child, parent_var in parent_map.items():
+        # Assign parent to the CPT, not the Variable
+        child_var = bn.variables[child]
+        parent_obj = bn.variables[parent_var]
+        child_var.cpt.parents = [parent_obj]
 
-            if not candidates:
-                # print("No more candidate moves")
-                break
-
-            # Evaluate candidates
-            best_move = None
-            best_move_ll = best_ll
-
-            for child, parent, mi in candidates:
-                bn_candidate = copy_bn_structure(bn)
-                bn_candidate.variables[child].cpt.parents = [
-                    bn_candidate.variables[parent]]
-
-                # Learn parameters with smoothing
-                bn_candidate.learn_parameters(data, alpha=1)
-
-                # Compute log-likelihood
-                loglikes = [safe_logprob(bn_candidate, row)
-                            for _, row in data.iterrows()]
-                ll = sum(ll for ll in loglikes if not np.isinf(ll))
-
-                if ll > best_move_ll + 1:  # Require significant improvement
-                    best_move_ll = ll
-                    best_move = (child, parent)
-                else:
-                    print("")
-
-            # Apply best move
-            if best_move:
-                child, parent = best_move
-                bn.variables[child].cpt.parents = [bn.variables[parent]]
-                bn.learn_parameters(data, alpha=1)
-                best_ll = best_move_ll
-            else:
-                break
-
-        return bn
-
-    except Exception as e:
-        return original_bn
+    # Learn parameters with Dirichlet smoothing
+    bn.learn_parameters(data)
+    return bn
 
 
-def predict_missing(bn, test_missing_file, test_complete_file):
-    """Accurate missing value prediction with validation"""
-    try:
-        missing_data = pd.read_csv(test_missing_file).astype(str)
-        complete_data = pd.read_csv(test_complete_file).astype(str)
+def main():
+    if len(sys.argv) != 5:
+        print("Usage: python script.py <training_data> <test_data> <missing_output> <bn_output>")
+        sys.exit(1)
 
-        correct = 0
-        total = 0
-        skipped = 0
+    train_data_path, test_data_path, missing_output, bn_output = sys.argv[1:5]
+    base_bn = BayesianNetwork(missing_output)
+    learned_bn = structure_learning(train_data_path, base_bn)
+    learned_bn.write(bn_output)
 
-        for idx, (missing_row, true_row) in enumerate(zip(missing_data.iterrows(), complete_data.iterrows())):
-            missing_row = missing_row[1]  # Get the Series
-            true_row = true_row[1]
-
-            # Find missing variables
-            missing_vars = [
-                col for col in missing_row.index if missing_row[col] == 'nan']
-            observed = {col: val for col,
-                        val in missing_row.items() if val != 'nan'}
-
-            if not missing_vars:
-                skipped += 1
-                continue
-
-            try:
-                if len(missing_vars) == 1:
-                    var = missing_vars[0]
-                    dist = bn.infer_distribution(observed, var)
-                    pred = max(dist, key=dist.get)
-                    true_val = true_row[var]
-                    if pred == true_val:
-                        correct += 1
-                    total += 1
-
-                elif len(missing_vars) == 2:
-                    var1, var2 = missing_vars
-                    dist = bn.infer_joint_distribution(observed, (var1, var2))
-                    pred = max(dist, key=dist.get)
-                    true_val1, true_val2 = true_row[var1], true_row[var2]
-                    if pred[0] == true_val1:
-                        correct += 1
-                    if pred[1] == true_val2:
-                        correct += 1
-                    total += 2
-
-            except Exception as e:
-                print(f"Prediction error row {idx}: {e}")
-                skipped += 1
-
-        accuracy = correct / total if total > 0 else 0
-        return accuracy
-
-    except Exception as e:
-        print(f"Prediction error: {e}")
-        return 0
-
-
-file = ["andes", "asia", "sachs", "sprinkler", "water", "alarm"]
-for filename in file:
-    base_bn = BayesianNetwork(
-        f"project3/datasets/{filename}/{filename}_missing_probabilities.bif")
-   # base_bn.learn_parameters(f"project3/datasets/{filename}/train.csv")
-    try:
-        learned_bn = structure_learning(
-            f"project3/datasets/{filename}/train.csv", base_bn)
-    except Exception as e:
-        print(f"Error during structure learning: {e}")
-        learned_bn = base_bn
-    learned_bn.write(
-        f"project3/datasets/{filename}/learned_{filename}.bif")
-    accuracy = test_inference_accuracy(
-        learned_bn, f"project3/datasets/{filename}/test_missing.csv", f"project3/datasets/{filename}/test.csv")
-    print(f"accuracy={accuracy} && file={filename}")
+if __name__ == "__main__":
+    main()
+    
