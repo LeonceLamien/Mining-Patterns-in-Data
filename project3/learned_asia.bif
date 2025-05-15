@@ -1,0 +1,54 @@
+variable asia {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable bronc {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable dysp {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable either {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable lung {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable smoke {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable tub {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable xray {
+  type discrete [ 2 ] { 0, 1 };
+}
+probability ( asia | xray ) {
+  (0) 0.021079688715192613, 0.9789203112848075;
+  (1) 0.008719279293130839, 0.9912807207068692;
+}
+probability ( bronc ) {
+  table 0.45002498750624687, 0.5499750124937531;
+}
+probability ( dysp | bronc ) {
+  (0) 0.8072333110732719, 0.19276668892672805;
+  (1) 0.1294399866123152, 0.8705600133876847;
+}
+probability ( either ) {
+  table 0.06334332833583209, 0.9366566716641679;
+}
+probability ( lung | either ) {
+  (0) 0.819788548322211, 0.18021145167778901;
+  (1) 0.00033709762809303924, 0.999662902371907;
+}
+probability ( smoke | bronc ) {
+  (0) 0.6674012545318218, 0.33259874546817825;
+  (1) 0.3611217169100548, 0.6388782830899453;
+}
+probability ( tub | either ) {
+  (0) 0.16781553812713496, 0.832184461872865;
+  (1) 0.0002808299591293879, 0.9997191700408706;
+}
+probability ( xray | either ) {
+  (0) 0.9692659249561516, 0.030734075043848355;
+  (1) 0.052619157917973086, 0.9473808420820269;
+}

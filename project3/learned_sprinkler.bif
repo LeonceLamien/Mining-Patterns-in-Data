@@ -1,0 +1,27 @@
+variable Cloudy {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable Rain {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable Sprinkler {
+  type discrete [ 2 ] { 0, 1 };
+}
+variable Wet_Grass {
+  type discrete [ 2 ] { 0, 1 };
+}
+probability ( Cloudy ) {
+  table 0.4975124378109453, 0.5024875621890548;
+}
+probability ( Rain | Cloudy ) {
+  (0) 0.7982270022436835, 0.2017729977563165;
+  (1) 0.18492994637506427, 0.8150700536249357;
+}
+probability ( Sprinkler | Cloudy ) {
+  (0) 0.46574724417130037, 0.5342527558286997;
+  (1) 0.9034713681104258, 0.09652863188957408;
+}
+probability ( Wet_Grass | Rain ) {
+  (0) 0.5947227528871547, 0.40527724711284524;
+  (1) 0.11257273348961053, 0.8874272665103895;
+}
