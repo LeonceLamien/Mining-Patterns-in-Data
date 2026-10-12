@@ -2,7 +2,7 @@ import sys
 import re
 
 """
-Skeleton file for the project 1 of the LINGI2364 course.
+Skeleton file for the project 1.
 Use this as your submission file. Every piece of code that is used in your program should be put inside this file.
 
 This file given to you as a skeleton for your implementation of the Apriori and Depth
